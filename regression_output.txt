@@ -1,0 +1,49 @@
+cars rows=240, auction lots=40, mean sale price=$26,078
+train=168, test=72
+
+=== FULL MODEL (all 5 features), training cars ===
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const        2.17e+04   1093.279     19.847      0.000    1.95e+04    2.39e+04
+Mileage_K    -78.5928     13.879     -5.663      0.000    -105.999     -51.187
+Age_Years  -1300.6404    185.074     -7.028      0.000   -1666.110    -935.171
+Horsepower    75.0158      4.747     15.801      0.000      65.641      84.391
+Accident   -2171.7835    511.560     -4.245      0.000   -3181.970   -1161.597
+Num_Owners    62.9248    370.489      0.170      0.865    -668.686     794.535
+==============================================================================
+R2=0.8730  adj R2=0.8691
+
+features with p > 0.05: ['Num_Owners']
+=== REDUCED MODEL (drop ['Num_Owners']) ===
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       2.176e+04   1023.723     21.258      0.000    1.97e+04    2.38e+04
+Mileage_K    -78.1533     13.595     -5.749      0.000    -104.997     -51.309
+Age_Years  -1291.6311    176.781     -7.306      0.000   -1640.707    -942.555
+Horsepower    75.0204      4.733     15.850      0.000      65.674      84.367
+Accident   -2176.6377    509.238     -4.274      0.000   -3182.191   -1171.085
+==============================================================================
+R2=0.8730  adj R2=0.8698  (full adj R2=0.8691)
+
+v1 = reduced model with features ['Mileage_K', 'Age_Years', 'Horsepower', 'Accident']; training adj R2 = 0.8698
+
+TEST CARS (n=72)
+  baseline (train mean $25,851): R2=-0.014  RMSE=$6,494
+  v1:                                  R2=0.823  RMSE=$2,716
+
+AUCTION LOTS (40 cars), profit = Later_Sale_Price - Auction_Price - $1500
+  baseline  buys 14 cars, 10 lose money, total profit $-6,000
+  v1        buys 17 cars,  6 lose money, total profit $15,800
+  (hindsight best: buying every profitable car = 12 cars, $21,500)
+
+Example car {'Mileage_K': 50, 'Age_Years': 4, 'Horsepower': 200, 'Accident': 0, 'Num_Owners': 2}: predicted sale price $27,692
+saved out/pred_vs_actual.png
+
+v1 coefficients:
+const         21762.40
+Mileage_K       -78.15
+Age_Years     -1291.63
+Horsepower       75.02
+Accident      -2176.64
